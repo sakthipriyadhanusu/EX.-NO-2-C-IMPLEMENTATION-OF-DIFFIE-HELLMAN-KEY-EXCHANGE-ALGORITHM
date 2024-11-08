@@ -18,69 +18,51 @@ To implement the Diffie-Hellman Key Exchange algorithm using C language.
   STEP-6: Now both of them compute their common secret key as the other one’s secret key power of a mod p.
   
 ## PROGRAM:
-```
-# Diffie-Hellman Code
+```#include <stdio.h>
+#include <math.h>
 
-def prime_checker(p):
-	if p < 1:
-		return -1
-	elif p > 1:
-		if p == 2:
-			return 1
-		for i in range(2, p):
-			if p % i == 0:
-				return -1
-			return 1
+int main() {
+    int p = 23; // Publicly known prime number
+    int g = 5;  // Publicly known primitive root
+    int x = 4;  // Alice's private key (only Alice knows this)
+    int y = 3;  // Bob's private key (only Bob knows this)
 
+    // Alice computes g^x mod p and sends it to Bob
+    double aliceSends = fmod(pow(g, x), p);
+    
+    // Bob computes (Alice's value)^y mod p to get the shared secret
+    double bobComputes = fmod(pow(aliceSends, y), p);
 
-def primitive_check(g, p, L):
-	for i in range(1, p):
-		L.append(pow(g, i) % p)
-	for i in range(1, p):
-		if L.count(i) > 1:
-			L.clear()
-			return -1
-		return 1
-l = []
-while 1:
-	P = int(input("Enter P : "))
-	if prime_checker(P) == -1:
-		print("Number Is Not Prime, Please Enter Again!")
-		continue
-	break
+    // Bob computes g^y mod p and sends it to Alice
+    double bobSends = fmod(pow(g, y), p);
 
-while 1:
-	G = int(input(f"Enter The Primitive Root Of {P} : "))
-	if primitive_check(G, P, l) == -1:
-		print(f"Number Is Not A Primitive Root Of {P}, Please Try Again!")
-		continue
-	break
+    // Alice computes (Bob's value)^x mod p to get the shared secret
+    double aliceComputes = fmod(pow(bobSends, x), p);
 
-# Private Keys
-x1, x2 = int(input("Enter The Private Key Of User 1 : ")), int(
-	input("Enter The Private Key Of User 2 : "))
-while 1:
-	if x1 >= P or x2 >= P:
-		print(f"Private Key Of Both The Users Should Be Less Than {P}!")
-		continue
-	break
+    // For verification: Both Alice and Bob's computed secrets should match
+    double sharedSecret = fmod(pow(g, (x * y)), p);
 
-# Calculate Public Keys
-y1, y2 = pow(G, x1) % P, pow(G, x2) % P
+    printf("Diffie-Hellman Key Exchange Algorithm\n");
+    printf("Alice Sends : %.0f\n", aliceSends);
+    printf("Bob Computes : %.0f\n", bobComputes);
+    printf("Bob Sends : %.0f\n", bobSends);
+    printf("Alice Computes : %.0f\n", aliceComputes);
+    printf("Shared Secret : %.0f\n", sharedSecret);
 
-# Generate Secret Keys
-k1, k2 = pow(y2, x1) % P, pow(y1, x2) % P
+    // Check if the shared secrets match
+    if ((aliceComputes == sharedSecret) && (aliceComputes == bobComputes)) {
+        printf("Success: Shared Secrets Match! Shared Secret: %.0f\n", sharedSecret);
+    } else {
+        printf("Error: Shared Secrets do not Match\n");
+    }
 
-print(f"\nSecret Key For User 1 Is {k1}\nSecret Key For User 2 Is {k2}\n")
+    return 0;
+}
 
-if k1 == k2:
-	print("Keys Have Been Exchanged Successfully")
-else:
-	print("Keys Have Not Been Exchanged Successfully")
 ```
 
 ## OUTPUT:
-![Screenshot 2024-09-25 153954](https://github.com/user-attachments/assets/c4f5bb8e-0562-4acc-9b58-e89d8dc91fbc)
+![Screenshot 2024-11-08 195620](https://github.com/user-attachments/assets/7006e090-330f-43fc-96c5-cb682d424a81)
 
 
 ## RESULT:
